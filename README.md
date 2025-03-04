@@ -1,2 +1,2 @@
 # Fastapi_learn
-Learning to use FastAPI
+Repository to store practice files

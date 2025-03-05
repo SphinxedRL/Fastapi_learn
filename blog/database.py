@@ -9,4 +9,9 @@ engine = create_engine(sql_alchemy_database, connect_args={"check_same_thread": 
 Base = declarative_base()
 Sessionlocal =sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
-
+def get_db():
+    db = Sessionlocal()
+    try:
+        yield db
+    finally:
+        db.close()

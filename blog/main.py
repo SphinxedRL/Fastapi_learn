@@ -21,7 +21,7 @@ def give():
     return{"text": "Helloworld"}
 
 
-@app.post('/blog', status_code=status.HTTP_201_CREATED)
+@app.post('/blog', status_code=status.HTTP_201_CREATED, tags=['blog'])
 def create(request:schemas.Blog, db :Session = Depends(get_db)):
     new_blog = models.Blog(title=request.title, body=request.body)
     db.add(new_blog)
@@ -29,12 +29,12 @@ def create(request:schemas.Blog, db :Session = Depends(get_db)):
     db.refresh(new_blog)
     return new_blog
 
-@app.get('/blog', response_model=List[schemas.Show_blog]) #change to return only title. If entire thing req, remove response_model
+@app.get('/blog', response_model=List[schemas.Show_blog], tags=['blog']) #change to return only title. If entire thing req, remove response_model
 def all(db :Session = Depends(get_db)):
     blogs= db.query(models.Blog).all()
     return blogs
 
-@app.get('/blog/{id}',status_code=status.HTTP_200_OK, response_model=schemas.Show_blog)
+@app.get('/blog/{id}',status_code=status.HTTP_200_OK, response_model=schemas.Show_blog, tags=['blog'])
 def get_spec(id,response :Response, db :Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id==id).first()
     if not blog:
@@ -42,13 +42,13 @@ def get_spec(id,response :Response, db :Session = Depends(get_db)):
         return {'detail':"This blog with the id {id} does not exist."}
     return blog
 
-@app.delete('/blog/{id}',status_code=status.HTTP_204_NO_CONTENT)
+@app.delete('/blog/{id}',status_code=status.HTTP_204_NO_CONTENT, tags=['blog'])
 def destroy(id, db :Session = Depends(get_db)):
     db.query(models.Blog).filter(models.Blog.id==id).delete(synchronize_session=False)
     db.commit()
     return{'deletion successful'}
 
-@app.put('/blog/{id}', status_code=status.HTTP_202_ACCEPTED)
+@app.put('/blog/{id}', status_code=status.HTTP_202_ACCEPTED, tags=['blog'])
 def update(id, request:schemas.Blog, db :Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id==id)
     point = blog.first()
@@ -62,7 +62,7 @@ def update(id, request:schemas.Blog, db :Session = Depends(get_db)):
     return {'ok, updated'}
 
 
-@app.post('/user', response_model=schemas.Show_user, status_code=status.HTTP_200_OK)
+@app.post('/user', response_model=schemas.Show_user, status_code=status.HTTP_200_OK, tags=['user'])
 def create_user(request:schemas.User, db :Session = Depends(get_db)):
     
     new_user = models.User(name =request.name, email=request.email, password=hashing.Hash.bcrypt(request.password))
@@ -71,7 +71,7 @@ def create_user(request:schemas.User, db :Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
-@app.get('/user', response_model=schemas.Show_user)
+@app.get('/user', response_model=schemas.Show_user, tags=['user'])#show user
 def show_user(id:int, response = Response,db :Session = Depends(get_db) ):
     user = db.query(models.User).filter(models.User.id==id).first()
     if not user:

@@ -13,6 +13,11 @@ class User(BaseModel):
     email: str
     password: str
 
+class User1(BaseModel):
+    name: str
+    email: str
+    class Config:
+         from_attributes = True
 
 class Show_user(BaseModel):
     name: str
@@ -25,6 +30,6 @@ class Show_user(BaseModel):
 class Show_blog(BaseModel): #used to display response model as we want instead of all parameters in the schema stored in db
     title:str
     body: str
-    creator: Show_user
+    creator: User1
     class Config:
         from_attributes = True

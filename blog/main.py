@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import FastAPI , Depends, status, Response, HTTPException
 from . import schemas
 from . import models
@@ -27,7 +28,7 @@ def create(request:schemas.Blog, db :Session = Depends(get_db)):
     db.refresh(new_blog)
     return new_blog
 
-@app.get('/blog')
+@app.get('/blog', response_model=List[schemas.Show_blog]) #change to return only title. If entire thing req, remove response_model
 def all(db :Session = Depends(get_db)):
     blogs= db.query(models.Blog).all()
     return blogs

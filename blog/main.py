@@ -62,7 +62,7 @@ def update(id, request:schemas.Blog, db :Session = Depends(get_db)):
     return {'ok, updated'}
 
 
-@app.post('/user', response_model=schemas.Show_user)
+@app.post('/user', response_model=schemas.Show_user, status_code=status.HTTP_200_OK)
 def create_user(request:schemas.User, db :Session = Depends(get_db)):
     
     new_user = models.User(name =request.name, email=request.email, password=hashing.Hash.bcrypt(request.password))
@@ -71,3 +71,10 @@ def create_user(request:schemas.User, db :Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
+@app.get('/user', response_model=schemas.Show_user)
+def show_user(id:int, response = Response,db :Session = Depends(get_db) ):
+    user = db.query(models.User).filter(models.User.id==id).first()
+    if not user:
+        response.status_code=status.HTTP_404_NOT_FOUND
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"This user with the id {id} does not exist.")
+    return user

@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException,status
+from datetime import datetime, timedelta, timezone
+from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from .. import schemas, database, models
 from ..hashing import Hash
+from . import token
 get_db=database.get_db
 
 router = APIRouter(tags=["authentication"], prefix='/auth')
@@ -18,5 +21,8 @@ def login(request:schemas.Login,db:Session=Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, 
             detail="Wrong password"
         )
-    #assign JWD token
-    return user
+    #access_token_expires = timedelta(minutes=token.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = token.create_access_token(
+        data={"sub": user.email}#, expires_delta=access_token_expires
+    )
+    return schemas.Token(access_token=access_token, token_type="bearer")

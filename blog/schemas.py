@@ -33,3 +33,9 @@ class Show_blog(BaseModel): #used to display response model as we want instead o
     creator: User1
     class Config:
         from_attributes = True
+
+class Login(BaseModel):#for login credentials
+    username: str
+    password: str
+    class Config:
+        from_attributes = True
